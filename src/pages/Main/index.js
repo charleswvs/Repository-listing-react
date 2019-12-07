@@ -13,6 +13,7 @@ export default class Main extends Component {
     this.state = {
       newRepo: '',
       repositories: [],
+      error: false,
       loading: false,
     };
   }
@@ -44,23 +45,34 @@ export default class Main extends Component {
 
     this.setState({ loading: true });
 
-    const { newRepo, repositories } = this.state;
+    try {
+      const { newRepo, repositories } = this.state;
 
-    const response = await api.get(`/repos/${newRepo}`);
+      if (newRepo === '') throw new Error('O campo não pode estar vazio');
 
-    const data = {
-      name: response.data.full_name,
-    };
+      if (repositories.find(element => element.name === newRepo))
+        throw new Error('Este repositorio já foi adicionado');
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
+      const response = await api.get(`/repos/${newRepo}`);
+
+      const data = {
+        name: response.data.full_name,
+      };
+
+      this.setState({
+        repositories: [...repositories, data],
+        newRepo: '',
+        error: false,
+      });
+    } catch (error) {
+      this.setState({ error: true });
+    } finally {
+      this.setState({ loading: false });
+    }
   };
 
   render() {
-    const { newRepo, repositories, loading } = this.state;
+    const { newRepo, repositories, loading, error } = this.state;
 
     return (
       <Container>
@@ -69,7 +81,7 @@ export default class Main extends Component {
           Repositories
         </h1>
 
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit} error={error}>
           {' '}
           {/** If there is more than one chaining, you will need a new StyledComponent, for organization */}
           <input
