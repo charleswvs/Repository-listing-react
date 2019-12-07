@@ -11,7 +11,7 @@ export default function Routes() {
         {/* o switch garante que apenas uma rota se chamada por vez */}
         <Route path="/" exact component={Main} />
         {/* se o exact não for infomado, o react irá mostrar a primeira rota que comece com "/", ou seja, nenhuma rota seria mostrada */}
-        <Route path="/repository" component={Repository} />
+        <Route path="/repository/:repository" component={Repository} />
       </Switch>
     </BrowserRouter>
   );
