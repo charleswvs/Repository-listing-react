@@ -39,6 +39,23 @@ export default class Repository extends Component {
     });
   }
 
+  async filterIssues(filter) {
+    const { match } = this.props;
+
+    const repoName = decodeURIComponent(match.params.repository);
+    const issues = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: filter,
+        per_page: 5,
+      },
+    });
+
+    this.setState({
+      issues: issues.data,
+      loading: false,
+    });
+  }
+
   render() {
     const { repository, issues, loading } = this.state;
 
@@ -53,6 +70,17 @@ export default class Repository extends Component {
           <img src={repository.owner.avatar_url} alt={repository.owner.login} />
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
+          <div>
+            <button type="button" onClick={() => this.filterIssues('all')}>
+              Todos
+            </button>
+            <button type="button" onClick={() => this.filterIssues('closed')}>
+              Fechados
+            </button>
+            <button type="button" onClick={() => this.filterIssues('open')}>
+              Abertos
+            </button>
+          </div>
         </Owner>
 
         <IssueList>
