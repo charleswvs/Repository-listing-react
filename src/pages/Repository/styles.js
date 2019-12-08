@@ -85,6 +85,40 @@ export const IssueList = styled.ul`
   border-top: 1px solid #eee;
   list-style: none;
 
+  div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    button {
+      display: inline-block;
+      margin: 0 auto;
+
+      box-shadow: inset 0px 0px 14px -3px #f2fadc;
+      background: linear-gradient(to bottom, #dbe6c4 5%, #9ba892 100%);
+      background-color: #dbe6c4;
+      border-radius: 6px;
+      border: 1px solid #b2b8ad;
+      display: inline-block;
+      cursor: pointer;
+      color: #757d6f;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 6px 24px;
+      text-decoration: none;
+      text-shadow: 0px 1px 0px #ced9bf;
+
+      &:hover {
+        background: linear-gradient(to bottom, #9ba892 5%, #dbe6c4 100%);
+        background-color: #9ba892;
+      }
+      &:active {
+        position: relative;
+        top: 1px;
+      }
+    }
+  }
+
   li {
     display: flex;
     padding: 15px 10px;

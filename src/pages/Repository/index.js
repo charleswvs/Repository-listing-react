@@ -13,11 +13,14 @@ export default class Repository extends Component {
       repository: {},
       issues: [],
       loading: true,
+      filter: 'open',
+      page: 1,
     };
   }
 
   async componentDidMount() {
     const { match } = this.props;
+    const { filter } = this.state;
 
     const repoName = decodeURIComponent(match.params.repository);
 
@@ -26,8 +29,7 @@ export default class Repository extends Component {
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
-          per_page: 5,
+          state: filter,
         },
       }),
     ]);
@@ -41,23 +43,43 @@ export default class Repository extends Component {
 
   async filterIssues(filter) {
     const { match } = this.props;
+    const { page } = this.state;
 
     const repoName = decodeURIComponent(match.params.repository);
     const issues = await api.get(`/repos/${repoName}/issues`, {
       params: {
         state: filter,
-        per_page: 5,
+        page,
       },
     });
 
     this.setState({
+      filter,
       issues: issues.data,
       loading: false,
     });
   }
 
+  async changePage(pageNumber) {
+    const { match } = this.props;
+    const { filter } = this.state;
+
+    const repoName = decodeURIComponent(match.params.repository);
+    const issues = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: filter,
+        page: pageNumber,
+      },
+    });
+
+    this.setState({
+      issues: issues.data,
+      page: pageNumber,
+    });
+  }
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, page } = this.state;
 
     if (loading) {
       return <Loading>Carregando...</Loading>;
@@ -84,6 +106,20 @@ export default class Repository extends Component {
         </Owner>
 
         <IssueList>
+          <div>
+            {page !== 1 ? (
+              <button
+                type="button"
+                className="btn__prev"
+                onClick={() => this.changePage(page - 1)}
+              >
+                Página {page - 1}
+              </button>
+            ) : null}
+            <button type="button" onClick={() => this.changePage(page + 1)}>
+              Página {page + 1}
+            </button>
+          </div>
           {issues.map(issue => (
             <li key={String(issue.id)}>
               <img src={issue.user.avatar_url} alt={issue.user.login} />
